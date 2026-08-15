@@ -44,7 +44,7 @@ jobs:
           name: ${{ format('Release {0}', github.ref_name) }}
           prerelease: ${{ contains(github.ref_name, '-RC-') }}
           fail_on_unmatched_files: true
-          draft: true
+          draft: false
     outputs:
       url: ${{ steps.release.outputs.url }}
 

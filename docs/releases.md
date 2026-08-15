@@ -29,11 +29,13 @@ Development plugin versions are pushed to the `main` branch and are **not** tagg
 |-------------------|-----------------------|--------------------------------|-------------------|
 | PR                | yyMMdd-HHmm-SNAPSHOT  | Build and test                 | None              |
 | Push to `main`    | 0.0.0-RC-1-SNAPSHOT   | Build, upload, and notify      | None              |
-| Tag `vX.Y.Z-RC-N` | X.Y.Z-RC-N-SNAPSHOT   | Build, draft, and notify       | Pre-release draft |
-| Tag `vX.Y.Z`      | X.Y.Z                 | Build, draft, and notify       | Release draft     |
+| Tag `vX.Y.Z-RC-N` | X.Y.Z-RC-N-SNAPSHOT   | Build, publish, and notify     | Pre-release       |
+| Tag `vX.Y.Z`      | X.Y.Z                 | Build, publish, and notify     | Release          |
+
+The published artifact keeps its versioned filename, e.g. `MinecraftChatAI-1.0.0.jar` for a
+`v1.0.0` tag.
 
 ## Creating a release
 
 1. Create a semantic version tag on `main`, such as `v0.1.0` or `v0.1.0-RC-1`.
-2. Push the tag and wait for the tag workflow to create a draft release.
-3. Review and publish the generated draft.
+2. Push the tag. The tag workflow builds the plugin and publishes the GitHub release automatically.

@@ -149,11 +149,4 @@ tasks.register("printProjectName") {
 
 tasks.register("release") {
     dependsOn("build")
-
-    doLast {
-        if (!version.toString().endsWith("-SNAPSHOT")) {
-            val releaseJar = layout.buildDirectory.file("libs/${rootProject.name}.jar").get().asFile
-            shadowJar.get().archiveFile.get().asFile.renameTo(releaseJar)
-        }
-    }
 }

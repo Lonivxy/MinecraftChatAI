@@ -39,8 +39,12 @@ boundaries. There is no `integrationTest` suite.
 
 ```bash
 ./gradlew -Pver="v1.0.0" release
-# → build/libs/<project-name>.jar (version stripped from filename for stable tags)
+# → build/libs/MinecraftChatAI-1.0.0.jar (keeps the version in the filename)
 ```
+
+The `release` task just runs `build`; it no longer strips the version from the filename. For a
+stable `vX.Y.Z` tag the artifact is `MinecraftChatAI-X.Y.Z.jar`, and for a `vX.Y.Z-RC-N` tag it is
+`MinecraftChatAI-X.Y.Z-RC-N-SNAPSHOT.jar`.
 
 Versioning logic (`build.gradle.kts`):
 - No `-Pver` → `yyMMdd-HHmm-SNAPSHOT`
