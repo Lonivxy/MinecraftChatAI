@@ -11,12 +11,12 @@ A Paper server plugin that plugs any OpenAI-compatible AI provider (e.g. DeepSee
 Minecraft chat. Players can chat with a playful neko assistant and translate the last few chat
 messages — all while staying safe from prompt-injection tricks.
 
-Built for **Paper/Purpur 26.1.2** (Paper API 26.2).
+Built for **Paper/Purpur 26.1.2** (Paper API 26.1.2).
 
 ## Tech stack
 
 - **Language:** Java 25
-- **Server API:** Paper API 26.2 (Paper/Purpur 26.1.2)
+- **Server API:** Paper API 26.1.2 (Paper/Purpur 26.1.2)
 - **Build:** Gradle 9.6.1 with Shadow for shading
 - **Commands:** CommandAPI (shaded & relocated)
 - **JSON:** Gson (shaded & relocated)
