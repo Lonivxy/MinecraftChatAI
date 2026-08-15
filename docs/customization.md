@@ -4,21 +4,21 @@ Use this checklist when turning the template into a plugin.
 
 ## Plugin identity
 
-1. Set `rootProject.name` in `settings.gradle.kts` to the Java entry point class name.
-2. Rename `ExamplePlugin.java`, the `ExamplePlugin` class, and all references to it. The current
-   `plugin.yml` build substitution requires this name to match `rootProject.name`.
-3. Set `group` in `build.gradle.kts` to the Java package.
-4. Rename the main and test package directories, declarations, and imports from
-   `com.crimsonwarpedcraft.exampleplugin`.
+1. `rootProject.name` in `settings.gradle.kts` is `MinecraftChatAI`.
+2. The entry point class is `MinecraftChatAI.java`. The `plugin.yml` build substitution requires
+   the class name to match `rootProject.name`.
+3. `group` in `build.gradle.kts` is `com.lonivxy.minecraftchatai`.
+4. Main and test code live under the `com.lonivxy.minecraftchatai` package.
 
-## Example code
+## Core code
 
-Replace or remove the example command, permission, config, data store, listener, and tests. Keep
-these parts in sync:
+The plugin's behavior lives in `src/main/java/com/lonivxy/minecraftchatai/`. Keep these parts in
+sync:
 
-- Command names and permission checks in Java
+- Command names, aliases, and permission checks in the `command/` classes
 - Permission declarations in `src/main/resources/plugin.yml`
-- Fields in `PluginConfig` and `src/main/resources/config.yml`
+- Fields in `AiConfig` and keys in `src/main/resources/config.yml`
+- System prompts in `ai/Prompts.java`
 - Main and test code
 
 CommandAPI registers commands in Java. Do not add matching entries under `commands:` in

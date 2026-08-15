@@ -1,71 +1,92 @@
-# PaperMC/Spigot Minecraft Server Plugin Template
-A template for building PaperMC/Spigot Minecraft server plugins!
+# MinecraftChatAI
 
-<!-- TODO: CHANGE ME -->
-[![](https://github.com/CrimsonWarpedcraft/plugin-template/actions/workflows/main.yml/badge.svg)](https://github.com/CrimsonWarpedcraft/plugin-template/actions/workflows/main.yml)
+![License](https://img.shields.io/github/license/Lonivxy/MinecraftChatAI)
+![Java](https://img.shields.io/badge/Java-25-orange)
+![Paper](https://img.shields.io/badge/Paper%2FPurpur-26.1.2-blue)
+![Gradle](https://img.shields.io/badge/Gradle-9.6.1-brightgreen)
+![Build](https://img.shields.io/github/actions/workflow/status/Lonivxy/MinecraftChatAI/main.yml?branch=main)
+![AI](https://img.shields.io/badge/AI-OpenAI%20Compatible-8A2BE2)
 
-<!-- TODO: CHANGE ME -->
-[![](https://dcbadge.limes.pink/api/server/5XMmeV6EtJ)](https://discord.gg/5XMmeV6EtJ)
+A Paper server plugin that plugs any OpenAI-compatible AI provider (e.g. DeepSeek) into your
+Minecraft chat. Players can chat with a playful neko assistant and translate the last few chat
+messages — all while staying safe from prompt-injection tricks.
+
+Built for **Paper/Purpur 26.1.2** (Paper API 26.2).
+
+## Tech stack
+
+- **Language:** Java 25
+- **Server API:** Paper API 26.2 (Paper/Purpur 26.1.2)
+- **Build:** Gradle 9.6.1 with Shadow for shading
+- **Commands:** CommandAPI (shaded & relocated)
+- **JSON:** Gson (shaded & relocated)
+- **AI:** any OpenAI-compatible `/chat/completions` provider (DeepSeek, OpenAI, etc.)
+- **HTTP:** JDK `java.net.http.HttpClient` (async, off the main thread)
+
 
 ## Features
-### Github Actions 🎬
-* Automated builds, testing, and release drafting
-* [Discord notifcations](https://github.com/marketplace/actions/discord-message-notify) for snapshots and releases
 
-### Bots 🤖
-* **Probot: Stale**
-    * Mark issues stale after 30 days
-* **Dependabot**
-    * Update GitHub Actions workflows
-    * Update Gradle dependencies
+- **`/aichat <message>`** (alias `/aic`) — chat with "Nya", a neko (catgirl) assistant. Replies
+  directly to the player, is limited to 300 characters, and matches the language they used.
+- **`/translate <count> <language>`** — translates the last `count` (1–5) genuine player chat
+  messages into the chosen language (English, Chinese, French, or Japanese) and sends the
+  translation back to you. Only real player messages are captured — plugin messages and AI
+  replies are never included.
+- **Anti prompt-injection by design** — every prompt tells the model that player input is
+  untrusted data and to never follow instructions embedded in chat. AI output is sent as plain
+  text so the model cannot inject MiniMessage formatting or commands.
+- **Bring your own provider** — configure the base URL, API key, and model in `config.yml`. Works
+  with any provider exposing the standard OpenAI-compatible `/chat/completions` endpoint
+  (DeepSeek, OpenAI, etc.).
 
-### Issue Templates 📋
-* Bug report template
-* Feature request template
+## Commands
 
-### Gradle Builds 🏗
-* Shadowed plugin dependencies
-* [Checkstyle](https://checkstyle.org/) Google standard style check
-* [SpotBugs](https://spotbugs.github.io/) code analysis
+| Command | Description | Permission |
+| --- | --- | --- |
+| `/aichat <message>` (alias `/aic`) | Chat with the neko assistant | `minecraftchatai.aichat` |
+| `/translate <count> <language>` | Translate the last 1–5 player messages | `minecraftchatai.translate` |
 
-### Testing 🧪
-* [JUnit 5](https://junit.org/) unit tests
-* [Mockito](https://site.mockito.org/) for mocking dependencies in unit tests
-* Integration tests against real [cw-commons](https://github.com/CrimsonWarpedcraft/cw-commons)
+`count` must be between 1 and 5. `language` is one of `english`, `chinese`, `french`, `japanese`.
 
-### Example Plugin Code 🔌
-* `/example` command via [CommandAPI](https://commandapi.jorel.dev) demonstrating subcommands, tab completion, and permissions
-* Example config loading and validation via [cw-commons](https://github.com/CrimsonWarpedcraft/cw-commons)' `BukkitConfigManagerBuilder`, backed by [Jackson](https://github.com/fasterxml/jackson) and [Hibernate Validator](https://hibernate.org/validator/)
-* Example persistent per-player data storage via cw-commons' `BukkitDataStoreBuilder`/`Repository`/`PlayerDataManager`, demonstrated by `/example creepersKilled`: `CreeperKillListener` writes to it on each creeper kill, `CreepersKilled` reads it back
+## Configuration
 
-### Config Files 📁
-* Sample plugin.yml with autofill name, version, and main class.
-* Example config.yml
-* Gradle build config
-* Simple .gitignore for common Gradle files
+Copy your settings into `config.yml` (generated on first run):
 
-## Usage
-In order to use this template for yourself, there are a few things that you will need to keep in mind.
+```yaml
+ai:
+  base-url: "https://api.deepseek.com"   # provider base URL
+  api-key: "REPLACE_ME"                   # your API key
+  model: "deepseek-chat"                  # model name
+  max-reply-length: 300                   # /aichat reply length cap
+  timeout-seconds: 30                     # request timeout
+```
 
-- [Extending the example code](docs/usage.md) — add commands, subcommands, config fields, or persistent per-player data
-- [Customizing this template](docs/customization.md) — the one-time checklist for forking this repo (placeholders, secrets, etc.)
-- [Releases & versioning](docs/releases.md) — PaperMC compatibility, version format, and how to cut a release
-- [Agent instructions & skills](docs/skills.md) — agent guidance, Claude Code support, and available skills
+Replace `api-key` with a real key (and change `base-url`/`model` for a different provider).
+Until then the commands refuse to run and the plugin logs a warning.
 
-## Building locally
-Thanks to [Gradle](https://gradle.org/), building locally is easy no matter what platform you're on. Simply run the following command:
+## Building
 
 ```text
 ./gradlew build
 ```
 
-This build step will also run all checks and tests, making sure your code is clean.
+This runs Checkstyle (Google style), SpotBugs, and the JUnit tests. The shaded JAR is written to
+`build/libs/`. Drop it into your server's `plugins/` folder.
 
-Run `./gradlew test` for isolated unit tests or `./gradlew integrationTest` for tests that use
-real cw-commons configuration and storage implementations. Integration-test files are created in
-JUnit temporary directories and removed automatically.
+## Project layout
 
-JARs can be found in `build/libs/`.
+- `src/main/java/com/lonivxy/minecraftchatai/` — plugin entry point, config, chat history,
+  AI client, prompts, commands, and listener.
+- `src/main/resources/` — `plugin.yml` and `config.yml`.
+- `src/test/` — JUnit unit tests.
+
+## Documentation
+
+- [Usage](docs/usage.md) — how the plugin works and how to extend it.
+- [Customization](docs/customization.md) — forking/customizing this project.
+- [Releases](docs/releases.md) — versioning and cutting a release.
+- [Agent instructions & skills](docs/skills.md) — agent guidance and skills.
 
 ## Contributing
+
 See [CONTRIBUTING.md](CONTRIBUTING.md).

@@ -2,14 +2,18 @@ main: ${PACKAGE}.${NAME}
 name: ${NAME}
 version: "${VERSION}"
 api-version: "26.1.2"
-author: AUTHOR
-description: DESCRIPTION
+author: Lonivxy
+description: AI chat (neko assistant) and chat translation for Paper servers.
 permissions:
-  example.use:
-    description: Allows use of the /example command
+  minecraftchatai.aichat:
+    description: Allows use of the /aichat command
     default: true
-  example.*:
-    description: Grants all other permissions
+  minecraftchatai.translate:
+    description: Allows use of the /translate command
+    default: true
+  minecraftchatai.*:
+    description: Grants all MinecraftChatAI permissions
     default: false
     children:
-      example.use: true
+      minecraftchatai.aichat: true
+      minecraftchatai.translate: true

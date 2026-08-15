@@ -22,23 +22,18 @@ folder.
 # Run tests only
 ./gradlew test
 
-# Run integration tests against real cw-commons implementations
-./gradlew integrationTest
-
 # Run a single test class
-./gradlew test --tests "com.example.plugin.command.PingTest"
+./gradlew test --tests "com.lonivxy.minecraftchatai.chat.ChatHistoryTest"
 
 # Run a single test method
-./gradlew test --tests "com.example.plugin.GreetTest.greetsTarget"
+./gradlew test --tests "com.lonivxy.minecraftchatai.ai.PromptsTest.nekoPromptContainsKeyRules"
 ```
 
 Checkstyle enforces Google Java style with `maxWarnings = 0` — the build fails on any warning. SpotBugs runs FindSecBugs. Both run as part of `build`; fix all findings before committing.
 
-Command executor unit tests (`Ping`, `Greet`, etc.) use Mockito directly — mock `CommandArguments` and `CommandSender`/`Player`, then call `run()`. No server or plugin lifecycle needed. Mockito must be declared explicitly as `testImplementation 'org.mockito:mockito-core:...'` — it is not provided transitively.
-
-Integration tests live under `src/integrationTest` and use the pinned cw-commons dependency rather
-than mocking it. Use JUnit `@TempDir` for generated configuration and SQLite files so tests do not
-modify or leave data in the worktree. Run this suite separately with `./gradlew integrationTest`.
+Unit tests cover the pure logic classes (`ChatHistory`, `AiConfig`, `Prompts`) directly with JUnit.
+Mockito is available (`testImplementation 'org.mockito:mockito-core:...'`) for mocking external
+boundaries. There is no `integrationTest` suite.
 
 ## Release JAR
 
@@ -74,12 +69,10 @@ Keep these in sync with the current state of the project:
 
 - **`minimize()` silently strips reflection/SPI-only dependencies** — `shadowJar`'s `minimize()`
   only treats a dependency as "used" if *this project's own compiled classes* reference it
-  directly. A library only referenced from inside an already-`exclude`d dependency (e.g.
-  cw-commons calling into a JDBC/driver library) looks unused and gets stripped down to empty
-  `package-info.class` stubs, causing `NoClassDefFoundError` at runtime even though the build
-  succeeds. Add an `exclude(dependency("group:artifact:.*"))` entry under `minimize` for any
-  such dependency, mirroring the existing `cw-commons` entry (which works around the same
-  problem for its bundled SQLite driver).
+  directly. A library only referenced from inside an already-`exclude`d dependency looks unused
+  and gets stripped down to empty `package-info.class` stubs, causing `NoClassDefFoundError` at
+  runtime even though the build succeeds. Add an `exclude(dependency("group:artifact:.*"))` entry
+  under `minimize` for any such dependency (the `commandapi` and `gson` entries are already there).
 - **OneDrive build lock** — if this repo lives under OneDrive, `./gradlew build` can fail with
   `Unable to delete directory '...\build\classes\java\main'` (or `...\test\binary`, or other
   `build/` subdirectories) because OneDrive holds a sync lock on it. Delete the offending

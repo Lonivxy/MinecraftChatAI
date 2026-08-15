@@ -8,9 +8,10 @@ changes.
 
 # Checklist
 
-1. Set `rootProject.name`; rename `ExamplePlugin.java` and all references to the example plugin.
-2. Set the Gradle `group`; rename main and test package paths, declarations, and imports.
-3. Replace or remove the example code.
+1. Set `rootProject.name` (`MinecraftChatAI`); keep `MinecraftChatAI.java` as the entry point.
+2. Set the Gradle `group` (`com.lonivxy.minecraftchatai`); keep main/test package paths in sync.
+3. The AI chat/translate logic lives under `com.lonivxy.minecraftchatai` (config, chat, ai,
+   command, listener). Replace or extend it as needed.
 4. Update `plugin.yml` metadata and permissions. Do not declare commands there.
 5. Align the Paper API, `api-version`, Java toolchain, CI Java versions, dependencies, shading,
    and supported-version docs.
