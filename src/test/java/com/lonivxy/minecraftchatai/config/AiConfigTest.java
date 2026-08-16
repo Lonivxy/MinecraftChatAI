@@ -7,42 +7,45 @@ import org.junit.jupiter.api.Test;
 
 class AiConfigTest {
 
+  private static AiConfig config(
+      String baseUrl, String apiKey, int cooldownSeconds, boolean aichatPublic) {
+    return new AiConfig(baseUrl, apiKey, "deepseek-chat", 300, 30, cooldownSeconds, aichatPublic);
+  }
+
   @Test
   void configuredWhenRealKey() {
-    AiConfig config =
-        new AiConfig("https://api.deepseek.com", "sk-test", "deepseek-chat", 300, 30);
-
-    assertTrue(config.isConfigured());
+    assertTrue(config("https://api.deepseek.com", "sk-test", 30, false).isConfigured());
   }
 
   @Test
   void notConfiguredWhenPlaceholderKey() {
-    AiConfig config =
-        new AiConfig("https://api.deepseek.com", "REPLACE_ME", "deepseek-chat", 300, 30);
-
-    assertFalse(config.isConfigured());
+    assertFalse(config("https://api.deepseek.com", "REPLACE_ME", 30, false).isConfigured());
   }
 
   @Test
   void notConfiguredWhenKeyBlank() {
-    AiConfig config =
-        new AiConfig("https://api.deepseek.com", "  ", "deepseek-chat", 300, 30);
-
-    assertFalse(config.isConfigured());
+    assertFalse(config("https://api.deepseek.com", "  ", 30, false).isConfigured());
   }
 
   @Test
   void notConfiguredWhenBaseUrlMissing() {
-    AiConfig config = new AiConfig("", "sk-test", "deepseek-chat", 300, 30);
-
-    assertFalse(config.isConfigured());
+    assertFalse(config("", "sk-test", 30, false).isConfigured());
   }
 
   @Test
   void trimsValues() {
     AiConfig config =
-        new AiConfig("  https://api.deepseek.com  ", "  sk-test  ", "  deepseek-chat  ", 300, 30);
+        new AiConfig(
+            "  https://api.deepseek.com  ", "  sk-test  ", "  deepseek-chat  ", 300, 30, 30, true);
 
     assertTrue(config.isConfigured());
+    assertTrue(config.isAichatPublic());
+  }
+
+  @Test
+  void clampsNegativeCooldown() {
+    AiConfig config = config("https://api.deepseek.com", "sk-test", -5, false);
+
+    assertTrue(config.getCooldownSeconds() >= 0);
   }
 }

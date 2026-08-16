@@ -1,7 +1,7 @@
 package com.lonivxy.minecraftchatai.command;
 
-import com.lonivxy.minecraftchatai.ai.AiClient;
-import com.lonivxy.minecraftchatai.config.AiConfig;
+import com.lonivxy.minecraftchatai.MinecraftChatAI;
+import com.lonivxy.minecraftchatai.ai.AiServices;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.GreedyStringArgument;
 import org.bukkit.plugin.Plugin;
@@ -16,17 +16,28 @@ public final class AichatCommand {
   /**
    * Builds the /aichat command.
    *
-   * @param aiClient the AI client
-   * @param config the AI configuration
+   * @param services the shared AI services
+   * @param main the owning plugin
    * @param plugin the owning plugin
    */
-  public AichatCommand(AiClient aiClient, AiConfig config, Plugin plugin) {
+  public AichatCommand(AiServices services, MinecraftChatAI main, Plugin plugin) {
     this.command =
         new CommandAPICommand("aichat")
             .withAliases("aic")
             .withPermission("minecraftchatai.aichat")
+            .withSubcommand(
+                new CommandAPICommand("resetsession")
+                    .withSubcommand(
+                        new CommandAPICommand("public")
+                            .withPermission("aichat.publicsessionreset")
+                            .executes(new AichatResetExecutor(services, true)))
+                    .executes(new AichatResetExecutor(services, false)))
+            .withSubcommand(
+                new CommandAPICommand("reload")
+                    .withPermission("minecraftchatai.reload")
+                    .executes(new AichatReloadExecutor(main)))
             .withArguments(new GreedyStringArgument("message"))
-            .executes(new AichatExecutor(aiClient, config, plugin));
+            .executes(new AichatExecutor(services, plugin));
   }
 
   /**

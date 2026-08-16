@@ -11,9 +11,17 @@ permissions:
   minecraftchatai.translate:
     description: Allows use of the /translate command
     default: true
+  aichat.publicsessionreset:
+    description: Allows use of /aichat resetsession public to reset the public conversation
+    default: false
+  minecraftchatai.reload:
+    description: Allows use of /aichat reload to reload config.yml
+    default: false
   minecraftchatai.*:
     description: Grants all MinecraftChatAI permissions
     default: false
     children:
       minecraftchatai.aichat: true
       minecraftchatai.translate: true
+      aichat.publicsessionreset: true
+      minecraftchatai.reload: true

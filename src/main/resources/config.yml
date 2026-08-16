@@ -1,3 +1,14 @@
+# Config schema version. Do NOT edit. If this does not match the version this plugin build
+# expects, the plugin warns you to delete config.yml so the latest structure is generated.
+config-version: 2
+
+# Minimum seconds a player must wait between /aichat and /translate uses (anti-spam).
+cooldown-seconds: 30
+
+# If true, /aichat replies are broadcast to everyone (public conversation). If false, replies
+# are sent only to the requesting player (private conversation).
+aichat-public: false
+
 # AI provider settings for MinecraftChatAI.
 # All requests are sent to <base-url>/chat/completions using the OpenAI-compatible
 # chat completions API, so any provider that supports it works (DeepSeek, OpenAI, etc.).

@@ -26,12 +26,15 @@ Built for **Paper/Purpur 26.1.2** (Paper API 26.1.2).
 
 ## Features
 
-- **`/aichat <message>`** (alias `/aic`) — chat with "Nya", a neko (catgirl) assistant. Replies
-  directly to the player, is limited to 300 characters, and matches the language they used.
-- **`/translate <count> <language>`** — translates the last `count` (1–5) genuine player chat
-  messages into the chosen language (English, Chinese, French, or Japanese) and sends the
-  translation back to you. Only real player messages are captured — plugin messages and AI
-  replies are never included.
+- **`/aichat <message>`** (alias `/aic`) — chat with "Nya", a neko (catgirl) assistant with
+  multi-turn conversation memory. Replies are limited to 300 characters, private by default
+  (or broadcast when `aichat-public` is enabled), and match the language you used.
+- **`/translate <count> <language>`** — privately translates the last `count` (1–5) genuine
+  player chat messages into the chosen language (English, Chinese, French, or Japanese). Results
+  are only ever sent to you — never broadcast — to prevent spam. Only real player messages are
+  captured; plugin messages and AI replies are never included.
+- **Anti-spam cooldown** — each player must wait `cooldown-seconds` between uses of `/aichat`
+  and `/translate`.
 - **Anti prompt-injection by design** — every prompt tells the model that player input is
   untrusted data and to never follow instructions embedded in chat. AI output is sent as plain
   text so the model cannot inject MiniMessage formatting or commands.
@@ -44,7 +47,10 @@ Built for **Paper/Purpur 26.1.2** (Paper API 26.1.2).
 | Command | Description | Permission |
 | --- | --- | --- |
 | `/aichat <message>` (alias `/aic`) | Chat with the neko assistant | `minecraftchatai.aichat` |
-| `/translate <count> <language>` | Translate the last 1–5 player messages | `minecraftchatai.translate` |
+| `/aichat resetsession` | Reset your private conversation | `minecraftchatai.aichat` |
+| `/aichat resetsession public` | Reset the shared public conversation | `aichat.publicsessionreset` |
+| `/aichat reload` | Reload `config.yml` (change API key without restart) | `minecraftchatai.reload` |
+| `/translate <count> <language>` | Privately translate the last 1–5 player messages | `minecraftchatai.translate` |
 
 `count` must be between 1 and 5. `language` is one of `english`, `chinese`, `french`, `japanese`.
 
@@ -53,6 +59,9 @@ Built for **Paper/Purpur 26.1.2** (Paper API 26.1.2).
 Copy your settings into `config.yml` (generated on first run):
 
 ```yaml
+config-version: 2           # schema version; do NOT edit
+cooldown-seconds: 30        # anti-spam cooldown per player
+aichat-public: false        # true = broadcast /aichat replies, false = private
 ai:
   base-url: "https://api.deepseek.com"   # provider base URL
   api-key: "REPLACE_ME"                   # your API key
@@ -63,6 +72,11 @@ ai:
 
 Replace `api-key` with a real key (and change `base-url`/`model` for a different provider).
 Until then the commands refuse to run and the plugin logs a warning.
+
+If the plugin's expected `config-version` differs from the one in your `config.yml`, the plugin
+warns you to delete `config.yml` so a fresh one is generated — it never rewrites the file
+automatically, to avoid losing settings like your `api-key`. Admins can apply config changes live
+with `/aichat reload`.
 
 ## Building
 

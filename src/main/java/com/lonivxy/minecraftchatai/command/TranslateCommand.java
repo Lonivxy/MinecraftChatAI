@@ -1,8 +1,7 @@
 package com.lonivxy.minecraftchatai.command;
 
-import com.lonivxy.minecraftchatai.ai.AiClient;
+import com.lonivxy.minecraftchatai.ai.AiServices;
 import com.lonivxy.minecraftchatai.chat.ChatHistory;
-import com.lonivxy.minecraftchatai.config.AiConfig;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.IntegerArgument;
 import dev.jorel.commandapi.arguments.MultiLiteralArgument;
@@ -18,13 +17,11 @@ public final class TranslateCommand {
   /**
    * Builds the /translate command.
    *
-   * @param aiClient the AI client
+   * @param services the shared AI services
    * @param history the shared chat history
-   * @param config the AI configuration
    * @param plugin the owning plugin
    */
-  public TranslateCommand(
-      AiClient aiClient, ChatHistory history, AiConfig config, Plugin plugin) {
+  public TranslateCommand(AiServices services, ChatHistory history, Plugin plugin) {
     this.command =
         new CommandAPICommand("translate")
             .withPermission("minecraftchatai.translate")
@@ -32,7 +29,7 @@ public final class TranslateCommand {
                 new IntegerArgument("count", 1, 5),
                 new MultiLiteralArgument(
                     "language", "english", "chinese", "french", "japanese"))
-            .executes(new TranslateExecutor(aiClient, history, config, plugin));
+            .executes(new TranslateExecutor(services, history, plugin));
   }
 
   /**

@@ -16,6 +16,8 @@ public final class AiConfig {
   private final String model;
   private final int maxReplyLength;
   private final int timeoutSeconds;
+  private final int cooldownSeconds;
+  private final boolean aichatPublic;
 
   /**
    * Creates an AiConfig from the given values.
@@ -25,14 +27,24 @@ public final class AiConfig {
    * @param model the model name, e.g. {@code deepseek-chat}
    * @param maxReplyLength maximum number of characters for /aichat replies
    * @param timeoutSeconds request timeout in seconds
+   * @param cooldownSeconds minimum seconds between AI/translate commands per player
+   * @param aichatPublic whether /aichat replies are broadcast to everyone (public) or private
    */
   public AiConfig(
-      String baseUrl, String apiKey, String model, int maxReplyLength, int timeoutSeconds) {
+      String baseUrl,
+      String apiKey,
+      String model,
+      int maxReplyLength,
+      int timeoutSeconds,
+      int cooldownSeconds,
+      boolean aichatPublic) {
     this.baseUrl = baseUrl == null ? "" : baseUrl.trim();
     this.apiKey = apiKey == null ? "" : apiKey.trim();
     this.model = model == null ? "" : model.trim();
     this.maxReplyLength = maxReplyLength;
     this.timeoutSeconds = timeoutSeconds;
+    this.cooldownSeconds = Math.max(0, cooldownSeconds);
+    this.aichatPublic = aichatPublic;
   }
 
   /**
@@ -90,5 +102,23 @@ public final class AiConfig {
    */
   public int getTimeoutSeconds() {
     return timeoutSeconds;
+  }
+
+  /**
+   * Returns the minimum seconds between AI/translate commands per player.
+   *
+   * @return the cooldown in seconds
+   */
+  public int getCooldownSeconds() {
+    return cooldownSeconds;
+  }
+
+  /**
+   * Returns whether /aichat replies are broadcast to everyone.
+   *
+   * @return true when replies are public, false when private
+   */
+  public boolean isAichatPublic() {
+    return aichatPublic;
   }
 }

@@ -1,6 +1,7 @@
 package com.lonivxy.minecraftchatai.command;
 
-import com.lonivxy.minecraftchatai.ai.AiClient;
+import com.lonivxy.minecraftchatai.ai.AiMessage;
+import com.lonivxy.minecraftchatai.ai.AiServices;
 import com.lonivxy.minecraftchatai.ai.Prompts;
 import com.lonivxy.minecraftchatai.chat.ChatHistory;
 import com.lonivxy.minecraftchatai.chat.ChatMessage;
@@ -18,32 +19,28 @@ import org.bukkit.plugin.Plugin;
  * Executor for the /translate command.
  *
  * <p>Takes the last {@code count} (1-5) genuine player messages and asks the AI to translate them
- * into the chosen language, then sends the result back to the player. Output is sent as plain text
- * so the model cannot inject formatting.
+ * into the chosen language, then sends the result privately to the requesting player (never
+ * broadcast, to prevent spam). Output is sent as plain text so the model cannot inject formatting.
  */
 public final class TranslateExecutor implements CommandExecutor {
 
-  private final AiClient aiClient;
+  private final AiServices services;
   private final ChatHistory history;
-  private final AiConfig config;
   private final Plugin plugin;
 
   /**
    * Creates a TranslateExecutor.
    *
-   * @param aiClient the AI client
+   * @param services the shared AI services
    * @param history the shared chat history
-   * @param config the AI configuration
    * @param plugin the owning plugin, used to reschedule replies onto the main thread
    */
   @SuppressFBWarnings(
       value = "EI_EXPOSE_REP2",
       justification = "History is a shared singleton and Plugin is owned by the caller")
-  public TranslateExecutor(
-      AiClient aiClient, ChatHistory history, AiConfig config, Plugin plugin) {
-    this.aiClient = aiClient;
+  public TranslateExecutor(AiServices services, ChatHistory history, Plugin plugin) {
+    this.services = services;
     this.history = history;
-    this.config = config;
     this.plugin = plugin;
   }
 
@@ -53,9 +50,20 @@ public final class TranslateExecutor implements CommandExecutor {
       sender.sendRichMessage("<red>Only players can use this command.</red>");
       return;
     }
+    AiConfig config = services.getConfig();
     if (!config.isConfigured()) {
       player.sendRichMessage(
           "<red>AI is not configured. Ask an admin to set ai.api-key in config.yml.</red>");
+      return;
+    }
+
+    long remaining =
+        services
+            .getCooldowns()
+            .tryUse(player.getUniqueId(), "translate", config.getCooldownSeconds() * 1000L);
+    if (remaining > 0L) {
+      player.sendRichMessage(
+          "<red>Please wait " + formatSeconds(remaining) + " before using /translate again.</red>");
       return;
     }
 
@@ -71,7 +79,9 @@ public final class TranslateExecutor implements CommandExecutor {
     String system = Prompts.translateSystemPrompt(language);
     String user = Prompts.formatMessages(recent);
 
-    aiClient.chat(system, user)
+    services
+        .getAiClient()
+        .chat(List.of(new AiMessage("system", system), new AiMessage("user", user)))
         .thenAccept(reply -> runOnMain(() -> sendTranslation(player, language, reply)))
         .exceptionally(
             error -> {
@@ -92,6 +102,10 @@ public final class TranslateExecutor implements CommandExecutor {
 
   private void runOnMain(Runnable task) {
     plugin.getServer().getScheduler().runTask(plugin, task);
+  }
+
+  private static String formatSeconds(long millis) {
+    return ((millis + 999L) / 1000L) + "s";
   }
 
   private static String displayName(String language) {

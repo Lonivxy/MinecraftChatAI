@@ -9,6 +9,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -44,12 +45,12 @@ public final class AiClient {
   /**
    * Sends a chat request and completes with the model's text reply.
    *
-   * @param systemPrompt the system prompt
-   * @param userContent the user message content
+   * @param messages the full conversation, typically starting with a system prompt followed by
+   *     the session history and the new user message
    * @return a future completing with the model's reply
    */
-  public CompletableFuture<String> chat(String systemPrompt, String userContent) {
-    String payload = buildPayload(systemPrompt, userContent);
+  public CompletableFuture<String> chat(List<AiMessage> messages) {
+    String payload = buildPayload(messages);
     HttpRequest request =
         HttpRequest.newBuilder()
             .uri(URI.create(config.getBaseUrl() + "/chat/completions"))
@@ -63,14 +64,15 @@ public final class AiClient {
         .thenApply(this::extractContent);
   }
 
-  private String buildPayload(String systemPrompt, String userContent) {
+  private String buildPayload(List<AiMessage> messages) {
     JsonObject payload = new JsonObject();
     payload.addProperty("model", config.getModel());
 
-    JsonArray messages = new JsonArray();
-    messages.add(roleMessage("system", systemPrompt));
-    messages.add(roleMessage("user", userContent));
-    payload.add("messages", messages);
+    JsonArray array = new JsonArray();
+    for (AiMessage message : messages) {
+      array.add(roleMessage(message.role(), message.content()));
+    }
+    payload.add("messages", array);
 
     payload.addProperty("temperature", 0.7);
     return gson.toJson(payload);
