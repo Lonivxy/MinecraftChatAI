@@ -14,3 +14,9 @@ updates:
     commit-message:
       prefix: "chore(deps):"
     target-branch: "main"
+    ignore:
+      # Paper API is intentionally pinned to the 26.1.2 line to match the 26.1.2 server.
+      # The 26.2 API is not compatible with a 26.1.2 server, so never bump to it.
+      - dependency-name: "io.papermc.paper"
+        versions:
+          - "26.2.*"
