@@ -64,7 +64,7 @@ dependencies {
     testCompileOnly("com.github.spotbugs:spotbugs-annotations:4.10.3")
     testImplementation("io.papermc.paper:paper-api:26.1.2.build.74-stable")
     testImplementation("org.junit.jupiter:junit-jupiter:6.1.3")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.1.2")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.1.3")
 
     // CommandAPI registers the plugin's commands. It is shaded and relocated.
     implementation("dev.jorel:commandapi-paper-shade:12.0.0")
