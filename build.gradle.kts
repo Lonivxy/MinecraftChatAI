@@ -69,7 +69,7 @@ dependencies {
     // CommandAPI registers the plugin's commands. It is shaded and relocated.
     implementation("dev.jorel:commandapi-paper-shade:12.0.0")
     // Gson builds and parses the OpenAI-compatible JSON request/response payloads.
-    implementation("com.google.code.gson:gson:2.13.2")
+    implementation("com.google.code.gson:gson:2.14.0")
 
     testImplementation("org.mockito:mockito-core:5.23.0")
     mockitoAgent("org.mockito:mockito-core:5.23.0") { isTransitive = false }
